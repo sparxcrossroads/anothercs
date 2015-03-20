@@ -80,6 +80,7 @@ public class FPSPlayer : MonoBehaviour
         if (m_timer > 0.15 && sign_fire == 1)
         {
             this.audio.PlayOneShot(m_audio_fire);
+            create_fire();
             sign_fire = 0;
         }
 
@@ -87,7 +88,7 @@ public class FPSPlayer : MonoBehaviour
 
         m_ch.Move(movedirection * Time.deltaTime);
 
-        transform.Rotate(0, 0, 0);
+        //transform.Rotate(0, 0, 0);
 
          // @animation
          // idle
@@ -157,12 +158,14 @@ public class FPSPlayer : MonoBehaviour
                 m_ani.SetBool("reload", true);
             }
 
-            create_fire();
+     
         }
 
         // walkfire
         if (stateinfo.nameHash == Animator.StringToHash("Base Layer.walkfire") && !m_ani.IsInTransition(0))
         {
+
+
             m_ani.SetBool("walkfire", false);
 
             if (Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
@@ -170,7 +173,6 @@ public class FPSPlayer : MonoBehaviour
 
             if (Input.GetKey(KeyCode.R))
                 m_ani.SetBool("reload", true);
-
 
         }
 
@@ -194,7 +196,8 @@ public class FPSPlayer : MonoBehaviour
             out info,
             100,
             m_layer);
-        Instantiate(m_fx, info.point, info.transform.rotation);
+        if(hit)
+            Instantiate(m_fx, info.point, info.transform.rotation);
     }
 
 }
