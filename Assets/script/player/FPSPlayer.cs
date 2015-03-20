@@ -8,6 +8,9 @@ public class FPSPlayer : MonoBehaviour
     private CharacterController m_ch;
     public Transform m_transform;
     private Animator m_ani;
+    private Transform m_slight;
+    public LayerMask m_layer;
+    public Transform m_fx;
 
     private float m_moveSpeed = 2.5f;
     private float m_jumpSpeed = 8.0f;
@@ -17,13 +20,21 @@ public class FPSPlayer : MonoBehaviour
     //0 walk 1 run
     private int fire_WalkorRun = 0;
     private float m_timer = 0;
+    private int sign_fire = 0;
 
     private Vector3 movedirection=Vector3.zero;
+    
+    //sound
+    public AudioClip m_audio_jump;
+    public AudioClip m_audio_reload;
+    public AudioClip m_audio_fire;
+
     void Start()
     {
         m_transform = this.transform;
         m_ch = this.GetComponent<CharacterController>();
         m_ani = this.GetComponent<Animator>();
+        m_slight = GameObject.FindGameObjectWithTag("slight").transform;
 
     }
 
@@ -31,6 +42,8 @@ public class FPSPlayer : MonoBehaviour
     void Update()
     {
         if (m_life <= 0) return;
+        m_timer += Time.deltaTime;
+
         m_transform.eulerAngles=new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
         AnimatorStateInfo stateinfo = m_ani.GetCurrentAnimatorStateInfo(0);
 
@@ -43,9 +56,31 @@ public class FPSPlayer : MonoBehaviour
 
             if (Input.GetButton("Jump"))
             {
+                //sound jump
+                this.audio.PlayOneShot(m_audio_jump);
+
                 movedirection.y = m_jumpSpeed;
             }
 
+            // sound reload
+            if (Input.GetKeyDown(KeyCode.R))
+                this.audio.PlayOneShot(m_audio_reload);
+
+        }
+
+        // sound fire
+        m_timer += Time.deltaTime;
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //yield return new WaitForSeconds(2);
+            sign_fire = 1;
+            m_timer = 0;
+    
+        }
+        if (m_timer > 0.15 && sign_fire == 1)
+        {
+            this.audio.PlayOneShot(m_audio_fire);
+            sign_fire = 0;
         }
 
         movedirection.y -= m_gravity * Time.deltaTime;
@@ -99,6 +134,7 @@ public class FPSPlayer : MonoBehaviour
         // jump
         if (stateinfo.nameHash == Animator.StringToHash("Base Layer.jump") && !m_ani.IsInTransition(0))
         {
+
             m_ani.SetBool("jump", false);
 
             if (m_ch.isGrounded)
@@ -111,21 +147,17 @@ public class FPSPlayer : MonoBehaviour
         {
             m_ani.SetBool("idlefire", false);
 
-            //print("idlefire");
-            m_timer += Time.deltaTime;
-            print(m_timer.ToString());
-
-            if (m_timer > 0.8)
-            {
-                print("/rsssss");
+            if(m_audio_fire)
+            if (stateinfo.normalizedTime > 1.0f&& !Input.anyKey)
                 m_ani.SetBool("idle", true);
-            }
 
             if (Input.GetKey(KeyCode.R))
             {
                 print("reload");
                 m_ani.SetBool("reload", true);
             }
+
+            create_fire();
         }
 
         // walkfire
@@ -152,8 +184,17 @@ public class FPSPlayer : MonoBehaviour
 
          }
 
-         if (m_timer >0.8)
-             m_timer = 0;
     }
-    
+    void create_fire()
+    {
+        RaycastHit info;
+        bool hit = Physics.Raycast(
+            m_slight.position,
+            m_slight.TransformDirection(Vector3.forward),
+            out info,
+            100,
+            m_layer);
+        Instantiate(m_fx, info.point, info.transform.rotation);
+    }
+
 }
