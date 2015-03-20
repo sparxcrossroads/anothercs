@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Assets\script\camera\camerafollow.cs" />
     <Compile Include="Assets\script\camera\smoothfollow.cs" />
+    <Compile Include="Assets\script\cubetest.cs" />
     <Compile Include="Assets\script\player\FPSPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
