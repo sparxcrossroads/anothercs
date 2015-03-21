@@ -10,7 +10,9 @@ public class FPSPlayer : MonoBehaviour
     private Animator m_ani;
     private Transform m_slight;
     public LayerMask m_layer;
-    public Transform m_fx;
+
+    public Transform m_fx_level;
+    public Transform m_fx_blood;
 
     private float m_moveSpeed = 2.5f;
     private float m_jumpSpeed = 8.0f;
@@ -21,7 +23,7 @@ public class FPSPlayer : MonoBehaviour
     private int fire_WalkorRun = 0;
     private float m_timer = 0;
     private int sign_fire = 0;
-
+    
     private Vector3 movedirection=Vector3.zero;
     
     //sound
@@ -170,7 +172,7 @@ public class FPSPlayer : MonoBehaviour
 
             if (m_timer > 0.5f)
             {
-                print("walkfire ->walk  m_timer:"+m_timer.ToString());
+                //print("walkfire ->walk  m_timer:"+m_timer.ToString());
 
                 m_ani.SetBool("walk", true);
             }
@@ -200,8 +202,19 @@ public class FPSPlayer : MonoBehaviour
             out info,
             100,
             m_layer);
-        if(hit)
-            Instantiate(m_fx, info.point, info.transform.rotation);
+        if (hit)
+        {
+            print(info.transform.tag.ToString());
+            if (info.transform.tag.CompareTo("zombie") == 0)
+            {
+                zombie zombie = info.transform.GetComponent<zombie>();
+                zombie.OnDamage(1);
+
+                Instantiate(m_fx_blood, info.point, info.transform.rotation);
+            }
+            else
+                Instantiate(m_fx_level, info.point, info.transform.rotation);
+        }
     }
 
 }

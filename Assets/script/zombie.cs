@@ -7,9 +7,12 @@ public class zombie : MonoBehaviour {
     private FPSPlayer m_player;
     private NavMeshAgent m_agent;
     private Animator m_ani;
+    private Collider m_col;
+
+    public int m_life = 2;
 
     private float m_moveSpeed = 0.5f;
-    private float m_rotSpeed;
+    private float m_rotSpeed=90.0f;
     private float m_timer = 0;          //udate  relock player
 
 	// Use this for initialization
@@ -17,11 +20,10 @@ public class zombie : MonoBehaviour {
         m_transform = this.transform;
         m_player = GameObject.FindGameObjectWithTag("player").GetComponent<FPSPlayer>();
         m_agent = this.GetComponent<NavMeshAgent>();
-
         //m_agent.SetDestination(m_player.transform.position);
 
         m_ani = this.GetComponent<Animator>();
-	
+        m_col = this.GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame
@@ -40,7 +42,7 @@ public class zombie : MonoBehaviour {
             m_timer -= Time.deltaTime;
             if (m_timer > 0) return;
 
-            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 3.0f)
+            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 2.0f)
                 m_ani.SetBool("attack", true);
             else
             {
@@ -67,7 +69,7 @@ public class zombie : MonoBehaviour {
             m_agent.Move(m_transform.TransformDirection(new Vector3(0, 0, speed)));
 
             //attack
-            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 1.0f)
+            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 2.0f)
             {
                 m_agent.ResetPath();
                 m_ani.SetBool("attack", true);
@@ -75,8 +77,8 @@ public class zombie : MonoBehaviour {
         }
        
         //attack
-        if(stateinfo.nameHash==Animator.StringToHash("Base layer.attck")&&!m_ani.IsInTransition(0))
-        {
+        if(stateinfo.nameHash==Animator.StringToHash("Base Layer.attack")&&!m_ani.IsInTransition(0))
+        {          
             m_ani.SetBool("attack",false);
             // get the attack angle  考虑转身
             Vector3 oldangle=m_transform.eulerAngles;
@@ -91,14 +93,30 @@ public class zombie : MonoBehaviour {
 
             if(stateinfo.normalizedTime>=1.0f)
             {
-                print("attacked");
                 m_ani.SetBool("idle",true);
                 m_timer=1;
             }
 
+        }
+
+	    //die
+        if (stateinfo.nameHash == Animator.StringToHash("Base Layer.die") && !m_ani.IsInTransition(0))
+        {
+            this.collider.isTrigger = false;
+            m_transform.Translate((Vector3.up) * Time.deltaTime);
+            if (stateinfo.normalizedTime >= 1.0f)
+            {
+                Destroy(this.gameObject, 5.0f);
+            }
 
         }
-        
-	
 	}
+
+    public void OnDamage(int damage)
+    {
+        m_life -= damage;
+
+        if(m_life<=0)
+            m_ani.SetBool("die",true);
+    }
 }
