@@ -1,0 +1,104 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class zombie : MonoBehaviour {
+
+    private Transform m_transform;
+    private FPSPlayer m_player;
+    private NavMeshAgent m_agent;
+    private Animator m_ani;
+
+    private float m_moveSpeed = 0.5f;
+    private float m_rotSpeed;
+    private float m_timer = 0;          //udate  relock player
+
+	// Use this for initialization
+	void Start () {
+        m_transform = this.transform;
+        m_player = GameObject.FindGameObjectWithTag("player").GetComponent<FPSPlayer>();
+        m_agent = this.GetComponent<NavMeshAgent>();
+
+        //m_agent.SetDestination(m_player.transform.position);
+
+        m_ani = this.GetComponent<Animator>();
+	
+	}
+	
+	// Update is called once per frame
+	void Update ()
+    {
+        //print("playaer -> :"+m_player.m_transform.position.ToString());
+        if (m_player.m_life <= 0) return;
+        AnimatorStateInfo stateinfo = m_ani.GetCurrentAnimatorStateInfo(0);
+
+
+        //idle
+        if (stateinfo.nameHash == Animator.StringToHash("Base Layer.idle") && !m_ani.IsInTransition(0))
+        {
+            m_ani.SetBool("idle", false);
+
+            m_timer -= Time.deltaTime;
+            if (m_timer > 0) return;
+
+            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 3.0f)
+                m_ani.SetBool("attack", true);
+            else
+            {
+                m_timer = 0;
+                m_agent.SetDestination(m_player.m_transform.position);
+
+                m_ani.SetBool("run", true);
+            }
+        }
+
+        //run
+        if (stateinfo.nameHash == Animator.StringToHash("Base Layer.run") && !m_ani.IsInTransition(0))
+        {
+            m_ani.SetBool("run", false);
+            m_timer -= Time.deltaTime;
+
+            if (m_timer < 0)
+            {
+                m_agent.SetDestination(m_player.m_transform.position);
+                m_timer = 1;
+            }
+
+            float speed = m_moveSpeed * Time.deltaTime;
+            m_agent.Move(m_transform.TransformDirection(new Vector3(0, 0, speed)));
+
+            //attack
+            if (Vector3.Distance(m_transform.position, m_player.m_transform.position) < 1.0f)
+            {
+                m_agent.ResetPath();
+                m_ani.SetBool("attack", true);
+            }
+        }
+       
+        //attack
+        if(stateinfo.nameHash==Animator.StringToHash("Base layer.attck")&&!m_ani.IsInTransition(0))
+        {
+            m_ani.SetBool("attack",false);
+            // get the attack angle  考虑转身
+            Vector3 oldangle=m_transform.eulerAngles;
+
+            m_transform.LookAt(m_player.transform);
+            float target=m_transform.eulerAngles.y;
+
+            float speed=m_rotSpeed*Time.deltaTime;
+
+            float angle=Mathf.MoveTowardsAngle(oldangle.y,target,speed);
+            m_transform.eulerAngles=new Vector3(0,angle,0);
+
+            if(stateinfo.normalizedTime>=1.0f)
+            {
+                print("attacked");
+                m_ani.SetBool("idle",true);
+                m_timer=1;
+            }
+
+
+        }
+        
+	
+	}
+}

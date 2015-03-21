@@ -54,7 +54,9 @@
     <Compile Include="Assets\script\camera\camerafollow.cs" />
     <Compile Include="Assets\script\camera\smoothfollow.cs" />
     <Compile Include="Assets\script\cubetest.cs" />
+    <Compile Include="Assets\script\fx_destroy.cs" />
     <Compile Include="Assets\script\player\FPSPlayer.cs" />
+    <Compile Include="Assets\script\zombie.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\medol\ArmyPilot\ArmyPilot\ArmyPilot.mesh.xml" />

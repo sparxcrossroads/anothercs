@@ -168,8 +168,12 @@ public class FPSPlayer : MonoBehaviour
 
             m_ani.SetBool("walkfire", false);
 
-            if (Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
+            if (m_timer > 0.5f)
+            {
+                print("walkfire ->walk  m_timer:"+m_timer.ToString());
+
                 m_ani.SetBool("walk", true);
+            }
 
             if (Input.GetKey(KeyCode.R))
                 m_ani.SetBool("reload", true);
