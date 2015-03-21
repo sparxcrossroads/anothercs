@@ -217,4 +217,17 @@ public class FPSPlayer : MonoBehaviour
         }
     }
 
+    public void onhurt(int hurtlevel)
+    {
+        Vector3 blood_pos = m_transform.position;
+        blood_pos.y += 1.5f;
+
+        Instantiate(m_fx_blood, blood_pos, transform.rotation);
+        m_life -= hurtlevel;
+        if (m_life <= 0)
+        {
+
+        }
+    }
+
 }

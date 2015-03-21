@@ -93,17 +93,22 @@ public class zombie : MonoBehaviour {
 
             if(stateinfo.normalizedTime>=1.0f)
             {
-                m_ani.SetBool("idle",true);
+                m_player.onhurt(1);
+                m_ani.SetBool("idle", true);
                 m_timer=1;
             }
+          
 
         }
 
 	    //die
         if (stateinfo.nameHash == Animator.StringToHash("Base Layer.die") && !m_ani.IsInTransition(0))
         {
-            this.collider.isTrigger = false;
-            m_transform.Translate((Vector3.up) * Time.deltaTime);
+            m_col.isTrigger = true;
+            Vector3 pos = m_transform.position;
+            pos.y = -0.95f;
+            m_transform.position = pos;
+
             if (stateinfo.normalizedTime >= 1.0f)
             {
                 Destroy(this.gameObject, 5.0f);
