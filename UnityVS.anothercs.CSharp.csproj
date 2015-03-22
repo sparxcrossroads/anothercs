@@ -51,15 +51,15 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\script\camera\camerafollow.cs" />
-    <Compile Include="Assets\script\camera\smoothfollow.cs" />
-    <Compile Include="Assets\script\cubetest.cs" />
-    <Compile Include="Assets\script\fx_destroy.cs" />
-    <Compile Include="Assets\script\gui.cs" />
-    <Compile Include="Assets\script\player\FPSPlayer.cs" />
-    <Compile Include="Assets\script\ray.cs" />
-    <Compile Include="Assets\script\zombie.cs" />
-    <Compile Include="Assets\script\zombiespawn.cs" />
+    <Compile Include="Assets\sounds\script\camera\camerafollow.cs" />
+    <Compile Include="Assets\sounds\script\camera\smoothfollow.cs" />
+    <Compile Include="Assets\sounds\script\cubetest.cs" />
+    <Compile Include="Assets\sounds\script\fx_destroy.cs" />
+    <Compile Include="Assets\sounds\script\gui.cs" />
+    <Compile Include="Assets\sounds\script\player\FPSPlayer.cs" />
+    <Compile Include="Assets\sounds\script\ray.cs" />
+    <Compile Include="Assets\sounds\script\zombie.cs" />
+    <Compile Include="Assets\sounds\script\zombiespawn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\medol\ArmyPilot\ArmyPilot\ArmyPilot.mesh.xml" />
