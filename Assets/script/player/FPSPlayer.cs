@@ -17,11 +17,11 @@ public class FPSPlayer : MonoBehaviour
 
     private float m_moveSpeed = 2.5f;
     private float m_jumpSpeed = 8.0f;
-    private float m_rotaspeed = 100.0f;
+    //private float m_rotaspeed = 100.0f;
     public int m_life = 5;
     private float m_gravity = 20.0f;
     //0 walk 1 run
-    private int fire_WalkorRun = 0;
+    //private int fire_WalkorRun = 0;
     private float m_timer = 0;
     private int sign_fire = 0;
     
@@ -31,6 +31,8 @@ public class FPSPlayer : MonoBehaviour
     public AudioClip m_audio_jump;
     public AudioClip m_audio_reload;
     public AudioClip m_audio_fire;
+    public AudioClip m_audio_die;
+
 
     void Start()
     {
@@ -40,12 +42,20 @@ public class FPSPlayer : MonoBehaviour
         m_slight = GameObject.FindGameObjectWithTag("slight").transform;
         m_gui = GameObject.FindGameObjectWithTag("gui").GetComponent<gui>();
 
+        Screen.lockCursor = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (m_life <= 0) return;
+        if (m_life <= 0)
+        {
+            //audio.PlayOneShot(m_audio_die);
+            return;
+        }
+        else
+            Screen.lockCursor = true;
+
         m_timer += Time.deltaTime;
 
         m_transform.eulerAngles=new Vector3(0, Camera.main.transform.eulerAngles.y, 0);
@@ -69,8 +79,7 @@ public class FPSPlayer : MonoBehaviour
             // sound reload
             if (Input.GetKeyDown(KeyCode.R))
             {
-                this.audio.PlayOneShot(m_audio_reload);
-                m_gui.reload();
+                this.audio.PlayOneShot(m_audio_reload);             
             }
 
         }
@@ -84,7 +93,7 @@ public class FPSPlayer : MonoBehaviour
             m_timer = 0;
     
         }
-        if (m_timer > 0.15 && sign_fire == 1)
+        if (m_timer > 0.15 && sign_fire == 1 && m_gui.m_bullet > 0)
         {
             this.audio.PlayOneShot(m_audio_fire);
             create_fire();
@@ -110,7 +119,7 @@ public class FPSPlayer : MonoBehaviour
             if (Input.GetButton("Jump"))
                 m_ani.SetBool("jump", true);
 
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButton("Fire1")&&m_gui.m_bullet>0)
                 m_ani.SetBool("idlefire", true);
 
             if (Input.GetKey(KeyCode.R))
@@ -132,7 +141,7 @@ public class FPSPlayer : MonoBehaviour
             if (Input.GetButton("Jump"))
                 m_ani.SetBool("jump", true);
 
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButton("Fire1") && m_gui.m_bullet > 0)
                 m_ani.SetBool("walkfire", true);
 
             if (Input.GetKey(KeyCode.R))
@@ -156,9 +165,11 @@ public class FPSPlayer : MonoBehaviour
         {
             m_ani.SetBool("idlefire", false);
 
-            if(m_audio_fire)
-            if (stateinfo.normalizedTime > 1.0f&& !Input.anyKey)
-                m_ani.SetBool("idle", true);
+           if (stateinfo.normalizedTime > 1.0f && m_timer > 1.5f)
+             {
+               print("idlefire->idle "+m_timer.ToString());
+                 m_ani.SetBool("idle", true);
+             }
 
             if (Input.GetKey(KeyCode.R))
             {
@@ -172,13 +183,12 @@ public class FPSPlayer : MonoBehaviour
         // walkfire
         if (stateinfo.nameHash == Animator.StringToHash("Base Layer.walkfire") && !m_ani.IsInTransition(0))
         {
-
-
+          
             m_ani.SetBool("walkfire", false);
 
             if (m_timer > 0.5f)
             {
-                //print("walkfire ->walk  m_timer:"+m_timer.ToString());
+                print("walkfire ->walk  m_timer:" + m_timer.ToString());
 
                 m_ani.SetBool("walk", true);
             }
@@ -194,7 +204,10 @@ public class FPSPlayer : MonoBehaviour
              m_ani.SetBool("reload", false);
              //finsh
              if (stateinfo.normalizedTime > 1.0f)
+             {
+                 m_gui.reload();
                  m_ani.SetBool("idle", true);
+             }
 
          }
 

@@ -8,12 +8,21 @@ public class zombie : MonoBehaviour {
     private NavMeshAgent m_agent;
     private Animator m_ani;
     private Collider m_col;
+    private gui m_gui;
 
     public int m_life = 2;
 
     private float m_moveSpeed = 0.5f;
     private float m_rotSpeed=90.0f;
     private float m_timer = 0;          //udate  relock player
+
+
+    protected zombiespawn m_spawn;
+    public void init(zombiespawn spawn)
+    {
+        m_spawn=spawn;
+        m_spawn.m_count++;
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -24,6 +33,7 @@ public class zombie : MonoBehaviour {
 
         m_ani = this.GetComponent<Animator>();
         m_col = this.GetComponent<Collider>();
+        m_gui = GameObject.FindGameObjectWithTag("gui").GetComponent<gui>();
 	}
 	
 	// Update is called once per frame
@@ -104,6 +114,7 @@ public class zombie : MonoBehaviour {
 	    //die
         if (stateinfo.nameHash == Animator.StringToHash("Base Layer.die") && !m_ani.IsInTransition(0))
         {
+            m_agent.SetDestination(m_transform.position);
             m_col.isTrigger = true;
             Vector3 pos = m_transform.position;
             pos.y = -0.95f;
@@ -119,9 +130,14 @@ public class zombie : MonoBehaviour {
 
     public void OnDamage(int damage)
     {
+       
         m_life -= damage;
 
-        if(m_life<=0)
-            m_ani.SetBool("die",true);
+        if (m_life == 0)
+        {
+            m_gui.setscore(10);
+            m_spawn.m_count--;
+            m_ani.SetBool("die", true);
+        }
     }
 }

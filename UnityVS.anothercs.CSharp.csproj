@@ -59,6 +59,7 @@
     <Compile Include="Assets\script\player\FPSPlayer.cs" />
     <Compile Include="Assets\script\ray.cs" />
     <Compile Include="Assets\script\zombie.cs" />
+    <Compile Include="Assets\script\zombiespawn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\medol\ArmyPilot\ArmyPilot\ArmyPilot.mesh.xml" />
