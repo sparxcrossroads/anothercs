@@ -10,6 +10,7 @@ public class FPSPlayer : MonoBehaviour
     private Animator m_ani;
     private Transform m_slight;
     public LayerMask m_layer;
+    private gui m_gui;
 
     public Transform m_fx_level;
     public Transform m_fx_blood;
@@ -37,6 +38,7 @@ public class FPSPlayer : MonoBehaviour
         m_ch = this.GetComponent<CharacterController>();
         m_ani = this.GetComponent<Animator>();
         m_slight = GameObject.FindGameObjectWithTag("slight").transform;
+        m_gui = GameObject.FindGameObjectWithTag("gui").GetComponent<gui>();
 
     }
 
@@ -66,7 +68,10 @@ public class FPSPlayer : MonoBehaviour
 
             // sound reload
             if (Input.GetKeyDown(KeyCode.R))
+            {
                 this.audio.PlayOneShot(m_audio_reload);
+                m_gui.reload();
+            }
 
         }
 
@@ -83,6 +88,7 @@ public class FPSPlayer : MonoBehaviour
         {
             this.audio.PlayOneShot(m_audio_fire);
             create_fire();
+            m_gui.setbullet(1);
             sign_fire = 0;
         }
 
@@ -219,15 +225,15 @@ public class FPSPlayer : MonoBehaviour
 
     public void onhurt(int hurtlevel)
     {
+    
         Vector3 blood_pos = m_transform.position;
         blood_pos.y += 1.5f;
 
         Instantiate(m_fx_blood, blood_pos, transform.rotation);
         m_life -= hurtlevel;
-        if (m_life <= 0)
-        {
 
-        }
+        m_gui.setlife();
+
     }
 
 }
